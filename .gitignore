@@ -60,3 +60,5 @@ uploads/
 .pytest_cache/
 .coverage
 htmlcov/
+.vercel
+.env*.local

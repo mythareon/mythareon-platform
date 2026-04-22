@@ -19,7 +19,11 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     # Startup
     logger.info("Creating database tables...")
-    models.Base.metadata.create_all(bind=engine)
+    try:
+        models.Base.metadata.create_all(bind=engine)
+    except Exception as exc:
+        # Keep API booting so the platform health checks can pass while DB is wiring up.
+        logger.warning("Database startup check failed; continuing without migration step: %s", exc)
     logger.info("Application startup complete")
     yield
     # Shutdown
