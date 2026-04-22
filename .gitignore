@@ -62,3 +62,7 @@ uploads/
 htmlcov/
 .vercel
 .env*.local
+
+# Local AI tooling and skills
+.agents/
+.claude/

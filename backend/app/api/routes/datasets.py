@@ -41,6 +41,20 @@ async def create_dataset(
     return {"id": dataset.id, "name": dataset.name}
 
 
+@router.get("")
+async def list_datasets(
+    project_id: str,
+    db: Session = Depends(get_db)
+):
+    """List datasets for a project."""
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    datasets = db.query(Dataset).filter(Dataset.project_id == project_id).all()
+    return datasets
+
+
 @router.post("/{dataset_id}/upload")
 async def upload_dataset(
     project_id: str,

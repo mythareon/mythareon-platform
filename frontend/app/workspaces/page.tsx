@@ -1,34 +1,54 @@
 import { redirect } from 'next/navigation';
+import WorkspacesClient from './workspaces-client';
+
+export const dynamic = 'force-dynamic';
 
 export default async function WorkspacesPage() {
   const hasClerkKey = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  let clerkId = 'demo-user';
+  let email = 'demo@mythareon.local';
+  let name = 'Demo User';
 
   if (hasClerkKey) {
-    const { auth } = await import('@clerk/nextjs/server');
+    const { auth, currentUser } = await import('@clerk/nextjs/server');
     const { userId } = await auth();
 
     if (!userId) {
-      redirect('/');
+      redirect('/sign-in');
     }
+
+    const user = await currentUser();
+    clerkId = userId;
+    email = user?.primaryEmailAddress?.emailAddress || user?.emailAddresses?.[0]?.emailAddress || email;
+    name = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.username || name;
   }
 
-  return (
-    <div className="min-h-screen bg-slate-50">
-      <nav className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-slate-900">Mythareon - Workspaces</h1>
-        </div>
-      </nav>
-      
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold text-slate-900 mb-6">Your Workspaces</h2>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-slate-600">Create your first workspace to get started</p>
-          <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-            Create Workspace
-          </button>
-        </div>
-      </main>
-    </div>
-  );
+  try {
+    await fetch(
+      `${apiBase}/api/auth/sync-user?clerk_id=${encodeURIComponent(clerkId)}&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`,
+      { method: 'POST', cache: 'no-store' },
+    );
+  } catch {
+    // Keep page rendering even if backend is temporarily unavailable.
+  }
+
+  let workspaces = [];
+  let billing = { plan: 'free', subscription_status: 'inactive', subscription_current_period_end: null };
+
+  try {
+    const [workspacesRes, billingRes] = await Promise.all([
+      fetch(`${apiBase}/api/workspaces?clerk_id=${encodeURIComponent(clerkId)}`, { cache: 'no-store' }),
+      fetch(`${apiBase}/api/billing/me?clerk_id=${encodeURIComponent(clerkId)}`, { cache: 'no-store' }),
+    ]);
+
+    workspaces = workspacesRes.ok ? await workspacesRes.json() : [];
+    billing = billingRes.ok
+      ? await billingRes.json()
+      : { plan: 'free', subscription_status: 'inactive', subscription_current_period_end: null };
+  } catch {
+    // Fallback UI uses safe defaults.
+  }
+
+  return <WorkspacesClient apiBase={apiBase} clerkId={clerkId} initialWorkspaces={workspaces} initialBilling={billing} />;
 }

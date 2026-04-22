@@ -27,6 +27,11 @@ class Settings:
         self.stripe_secret_key = os.getenv("STRIPE_SECRET_KEY", "")
         self.stripe_publishable_key = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
         self.stripe_webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+        self.stripe_price_id_pro = os.getenv("STRIPE_PRICE_ID_PRO", "")
+
+        # App URLs
+        self.frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+        self.backend_url = os.getenv("BACKEND_URL", "http://localhost:8000")
         
         # LLM Providers
         self.openai_api_key = os.getenv("OPENAI_API_KEY", "")

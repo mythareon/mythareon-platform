@@ -28,7 +28,12 @@ async def sync_user(
     
     db.commit()
     db.refresh(user)
-    return {"user_id": user.id, "email": user.email}
+    return {
+        "user_id": user.id,
+        "email": user.email,
+        "plan_tier": user.plan_tier,
+        "subscription_status": user.subscription_status,
+    }
 
 
 @router.get("/me")
@@ -40,4 +45,12 @@ async def get_current_user(
     user = db.query(User).filter(User.clerk_id == clerk_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return user
+    return {
+        "id": user.id,
+        "clerk_id": user.clerk_id,
+        "email": user.email,
+        "name": user.name,
+        "plan_tier": user.plan_tier,
+        "subscription_status": user.subscription_status,
+        "subscription_current_period_end": user.subscription_current_period_end,
+    }

@@ -13,6 +13,11 @@ class User(Base):
     clerk_id = Column(String(255), unique=True, nullable=False, index=True)
     email = Column(String(255), unique=True, nullable=False, index=True)
     name = Column(String(255))
+    plan_tier = Column(String(50), nullable=False, default="free")
+    stripe_customer_id = Column(String(255), unique=True, index=True)
+    stripe_subscription_id = Column(String(255), unique=True, index=True)
+    subscription_status = Column(String(50), default="inactive")
+    subscription_current_period_end = Column(DateTime)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

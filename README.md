@@ -50,6 +50,8 @@ Frontend: http://localhost:3000
 Backend API: http://localhost:8000
 API Docs: http://localhost:8000/docs
 
+Architecture: [ARCHITECTURE.md](ARCHITECTURE.md)
+
 ## Project Structure
 
 ```
@@ -138,8 +140,16 @@ POST   /api/projects/{id}/eval-runs      # Create eval run
 GET    /api/projects/{id}/eval-runs/{id} # Get eval status
 GET    /api/projects/{id}/eval-runs      # List eval runs
 
+GET    /api/workspaces?clerk_id=...      # List user workspaces
+POST   /api/workspaces?clerk_id=...      # Create workspace
+
+GET    /api/billing/me?clerk_id=...      # Current plan/subscription status
+GET    /api/billing/checkout?clerk_id=...# Start Stripe checkout for Pro plan
+GET    /api/billing/portal?clerk_id=...  # Open Stripe billing portal
+
 POST   /webhooks/clerk                   # Clerk lifecycle events
 POST   /webhooks/github                  # GitHub CI/CD integration
+POST   /webhooks/stripe                  # Stripe subscription events
 ```
 
 ## Week 1-4 Roadmap
@@ -184,6 +194,12 @@ npm run format                             # Code formatting
 docker-compose up -d                       # Start services
 docker-compose down                        # Stop services
 docker-compose logs -f postgres            # View logs
+
+# Makefile (recommended)
+make install                               # Install backend + frontend deps
+make test                                  # Run backend + frontend tests
+make build                                 # Build frontend
+make migrate-up                            # Apply Alembic migrations
 ```
 
 ## Environment Variables
@@ -195,8 +211,23 @@ Key variables:
 - `REDIS_URL` — Redis connection URL
 - `CLERK_SECRET_KEY` — Clerk API key
 - `STRIPE_SECRET_KEY` — Stripe API key
+- `STRIPE_PRICE_ID_PRO` — Stripe recurring price for Pro plan
+- `FRONTEND_URL` — Frontend app URL used in billing redirects
 - `OPENAI_API_KEY` — Optional, for eval scoring
 - `ENVIRONMENT` — dev / staging / prod
+
+## Copilot Workflow Setup
+
+Project-level GitHub Copilot workflows are configured under:
+- `.github/copilot-instructions.md`
+- `.github/instructions/backend.instructions.md`
+- `.github/instructions/frontend.instructions.md`
+- `.github/prompts/implement-feature.prompt.md`
+- `.github/prompts/api-with-tests.prompt.md`
+- `.github/prompts/release-readiness.prompt.md`
+
+Obsidian mirror note:
+- `.obsidian-vault/product/copilot-workflow.md`
 
 ## Next Steps
 
