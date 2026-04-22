@@ -1,5 +1,10 @@
 # Mythareon - Calibrate Every Layer of Your AI
 
+[![Backend Build](https://img.shields.io/github/actions/workflow/status/mythareon/mythareon-platform/ci.yml?branch=main&label=backend%20build)](https://github.com/mythareon/mythareon-platform/actions/workflows/ci.yml)
+[![Frontend Build](https://img.shields.io/github/actions/workflow/status/mythareon/mythareon-platform/ci.yml?branch=main&label=frontend%20build)](https://github.com/mythareon/mythareon-platform/actions/workflows/ci.yml)
+[![Backend Version](https://img.shields.io/badge/backend-v0.1.0-blue)](https://github.com/mythareon/mythareon-platform)
+[![Frontend Version](https://img.shields.io/badge/frontend-v0.1.0-0A7EA4)](https://github.com/mythareon/mythareon-platform)
+
 **Status:** Week 1 Implementation Sprint 🚀
 
 ## Quick Start
