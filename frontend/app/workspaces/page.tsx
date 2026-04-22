@@ -1,11 +1,15 @@
-import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 
 export default async function WorkspacesPage() {
-  const { userId } = await auth();
-  
-  if (!userId) {
-    redirect('/');
+  const hasClerkKey = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
+
+  if (hasClerkKey) {
+    const { auth } = await import('@clerk/nextjs/server');
+    const { userId } = await auth();
+
+    if (!userId) {
+      redirect('/');
+    }
   }
 
   return (
